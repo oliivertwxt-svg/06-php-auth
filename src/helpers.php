@@ -46,6 +46,19 @@ function old(string $key, string $default = ''): string
     return is_string($value) ? $value : $default;
 }
 
+function render_authenticated_nav(array $user, string $pathPrefix = ''): void
+{
+    echo '<nav class="auth-nav" aria-label="Account navigation">';
+    echo '<a href="' . e($pathPrefix) . 'dashboard.php">Dashboard</a>';
+    echo '<a href="' . e($pathPrefix) . 'profile.php">Profile</a>';
+
+    if (($user['role'] ?? null) === 'admin') {
+        echo '<a href="' . e($pathPrefix) . 'admin/users.php">Admin</a>';
+    }
+
+    echo '</nav>';
+}
+
 function is_safe_local_url(string $url): bool
 {
     if (

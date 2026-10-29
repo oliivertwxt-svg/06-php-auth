@@ -80,7 +80,21 @@ function require_role(string $role): void
     }
 
     http_response_code(403);
-    exit('Forbidden');
+    echo '<!doctype html><html lang="en"><head><meta charset="utf-8">';
+    echo '<meta name="viewport" content="width=device-width, initial-scale=1">';
+    echo '<title>Access denied</title><link rel="stylesheet" href="../assets/auth.css">';
+    echo '</head><body><main class="auth-shell"><section class="auth-card" role="alert">';
+    echo '<p class="eyebrow">403</p><h1>Access denied</h1>';
+    echo '<p class="subtitle">You do not have permission to view this page.</p>';
+
+    if ($user !== null) {
+        echo '<a href="../dashboard.php">Return to dashboard</a>';
+    } else {
+        echo '<a href="../login.php">Sign in</a>';
+    }
+
+    echo '</section></main></body></html>';
+    exit;
 }
 
 function enforce_idle_timeout(): void

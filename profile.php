@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = 'Enter a name that is no more than 100 characters.';
         }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 160) {
             $errors[] = 'Enter a valid email address.';
         } else {
             $statement = db()->prepare(
@@ -106,14 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = 'New password cannot exceed 72 bytes with the current PHP password algorithm.';
         }
 
-        if (
-            is_string($newPassword)
-            && PASSWORD_DEFAULT === PASSWORD_BCRYPT
-            && strlen($newPassword) > 72
-        ) {
-            $errors[] = 'New password cannot exceed 72 bytes with the current PHP password algorithm.';
-        }
-
         if (!is_string($confirmation) || !is_string($newPassword) || !hash_equals($newPassword, $confirmation)) {
             $errors[] = 'New passwords do not match.';
         }
@@ -152,6 +144,7 @@ $email = old('email', $email);
 <body>
 <main class="auth-shell">
     <section class="auth-card" aria-labelledby="page-title">
+        <?php render_authenticated_nav($user); ?>
         <p class="eyebrow">SWD AUTH</p>
         <h1 id="page-title">Account settings</h1>
         <p class="subtitle">Update your account details or change your password.</p>
@@ -177,7 +170,7 @@ $email = old('email', $email);
             <input id="name" name="name" type="text" maxlength="100" autocomplete="name" required value="<?= e($name) ?>">
 
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" maxlength="254" autocomplete="email" required value="<?= e($email) ?>">
+            <input id="email" name="email" type="email" maxlength="160" autocomplete="email" required value="<?= e($email) ?>">
 
             <button type="submit">Save profile</button>
         </form>

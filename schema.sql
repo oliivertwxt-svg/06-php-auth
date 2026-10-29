@@ -7,7 +7,7 @@ USE swd_auth;
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(254) NOT NULL,
+    email VARCHAR(160) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(32) NOT NULL DEFAULT 'user',
     last_login_at DATETIME NULL,
@@ -18,11 +18,10 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS login_attempts (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    email VARCHAR(254) NOT NULL,
-    ip_address VARBINARY(16) NULL,
+    email VARCHAR(160) NOT NULL,
+    ip VARCHAR(45) NOT NULL,
     attempted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    was_successful TINYINT(1) NOT NULL DEFAULT 0,
     PRIMARY KEY (id),
     KEY login_attempts_email_time (email, attempted_at),
-    KEY login_attempts_ip_time (ip_address, attempted_at)
+    KEY login_attempts_ip_time (ip, attempted_at)
 ) ENGINE=InnoDB;

@@ -44,3 +44,13 @@ Errors are displayed for local development in `bootstrap.php`; turn off
 - `dashboard.php` displays account information and a POST sign-out form.
 - `profile.php` updates the signed-in user's name/email or changes the password
   after verifying the current password.
+- Failed login attempts are counted by email and client IP. Five failed attempts
+  in 15 minutes temporarily block further attempts; a successful login clears
+  matching attempts.
+- Email addresses are limited to 160 bytes to match the `users` table schema.
+- `admin/users.php` is restricted to admins and provides CSRF-protected role
+  management. Admins cannot remove their own admin role.
+- To promote the first administrator from the project directory, run:
+  `cd C:\xampp\htdocs\swd\06-php-auth`
+  `C:\xampp\php\php.exe promote-admin.php me@example.com`
+  The promotion script is CLI-only.

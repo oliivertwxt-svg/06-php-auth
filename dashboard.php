@@ -23,6 +23,7 @@ $successMessage = flash('success');
 <body>
 <main class="auth-shell">
     <section class="auth-card dashboard-card" aria-labelledby="page-title">
+        <?php render_authenticated_nav($user); ?>
         <p class="eyebrow">SWD AUTH</p>
         <h1 id="page-title">Welcome, <?= e($user['name']) ?></h1>
         <p class="subtitle">You are signed in to your account.</p>

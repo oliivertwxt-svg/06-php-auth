@@ -16,10 +16,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $postedEmail = $_POST['email'] ?? '';
     $email = is_string($postedEmail) ? strtolower(trim($postedEmail)) : '';
+    $emailKey = login_attempt_email_key($email);
     $password = $_POST['password'] ?? null;
-    store_old(['email' => $email]);
+    store_old(['email' => substr($email, 0, 160)]);
+    $ipAddress = login_client_ip();
 
-    if (!is_string($password) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $retryMinutes = login_throttle_minutes($emailKey, $ipAddress);
+
+    if ($retryMinutes > 0) {
+        $errors[] = 'Too many attempts, try again in ' . $retryMinutes . ' minutes';
+    } elseif (!is_string($password) || strlen($email) > 160 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        record_failed_login($emailKey, $ipAddress);
         $errors[] = 'Invalid email or password.';
     } else {
         $statement = db()->prepare(
@@ -32,10 +39,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $statement->fetch();
 
         if (!is_array($user) || !password_verify($password, (string) $user['password_hash'])) {
+            record_failed_login($emailKey, $ipAddress);
             $errors[] = 'Invalid email or password.';
         } else {
             $userId = (int) $user['id'];
             $intendedUrl = $_SESSION['intended_url'] ?? null;
+            clear_login_attempts($emailKey, $ipAddress);
 
             if (password_needs_rehash((string) $user['password_hash'], PASSWORD_DEFAULT)) {
                 $newHash = password_hash($password, PASSWORD_DEFAULT);
@@ -98,7 +107,7 @@ $flashError = flash('error');
         <form method="post" action="login.php">
             <?= csrf_field() ?>
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" maxlength="254" autocomplete="username" required value="<?= e($email) ?>">
+            <input id="email" name="email" type="email" maxlength="160" autocomplete="username" required value="<?= e($email) ?>">
 
             <label for="password">Password</label>
             <input id="password" name="password" type="password" autocomplete="current-password" required>

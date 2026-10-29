@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Enter a name that is no more than 100 characters.';
     }
 
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254) {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 160) {
         $errors[] = 'Enter a valid email address.';
     } else {
         $statement = db()->prepare('SELECT id FROM users WHERE email = :email LIMIT 1');
@@ -121,7 +121,7 @@ $email = old('email', $email);
             <input id="name" name="name" type="text" maxlength="100" autocomplete="name" required value="<?= e($name) ?>">
 
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" maxlength="254" autocomplete="email" required value="<?= e($email) ?>">
+            <input id="email" name="email" type="email" maxlength="160" autocomplete="email" required value="<?= e($email) ?>">
 
             <label for="password">Password</label>
             <input id="password" name="password" type="password" autocomplete="new-password" required>
